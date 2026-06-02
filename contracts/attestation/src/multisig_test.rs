@@ -369,9 +369,7 @@ fn test_expired_proposal_status_update() {
     env.ledger().set_sequence_number(current_seq + DEFAULT_PROPOSAL_EXPIRY + 1);
 
     // We catch the panic to check the status
-    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.approve_proposal(&owner2, &proposal_id, &0u64);
-    }));
+    let _ = client.try_approve_proposal(&owner2, &proposal_id, &0u64);
 
     let proposal = client.get_proposal(&proposal_id).unwrap();
     assert_eq!(proposal.status, ProposalStatus::Expired);

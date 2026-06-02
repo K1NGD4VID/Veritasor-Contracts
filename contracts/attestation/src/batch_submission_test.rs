@@ -700,9 +700,7 @@ fn test_atomicity_failure_at_first_item_rejects_all() {
         1,
     ));
 
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.submit_attestations_batch(&items);
-    }));
+    let result = client.try_submit_attestations_batch(&items);
 
     assert!(result.is_err(), "batch must panic on first-item conflict");
     assert!(client
@@ -757,9 +755,7 @@ fn test_atomicity_failure_at_last_item_rejects_all() {
         1,
     ));
 
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.submit_attestations_batch(&items);
-    }));
+    let result = client.try_submit_attestations_batch(&items);
 
     assert!(result.is_err(), "batch must panic on last-item conflict");
     assert!(client
@@ -814,9 +810,7 @@ fn test_atomicity_failure_at_middle_item_rejects_all() {
         1,
     ));
 
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.submit_attestations_batch(&items);
-    }));
+    let result = client.try_submit_attestations_batch(&items);
 
     assert!(result.is_err(), "batch must panic on middle-item conflict");
     assert!(client
@@ -866,9 +860,7 @@ fn test_atomicity_business_count_unchanged_on_failure() {
         1,
     ));
 
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.submit_attestations_batch(&items);
-    }));
+    let result = client.try_submit_attestations_batch(&items);
 
     assert!(result.is_err());
     assert_eq!(client.get_business_count(&business), 3);
@@ -906,9 +898,7 @@ fn test_atomicity_in_batch_self_duplicate_rejects_all() {
         1,
     ));
 
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.submit_attestations_batch(&items);
-    }));
+    let result = client.try_submit_attestations_batch(&items);
 
     assert!(result.is_err(), "self-duplicate must reject batch");
     assert!(client
@@ -964,9 +954,7 @@ fn test_atomicity_cross_business_failure_rejects_all() {
         1,
     ));
 
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.submit_attestations_batch(&items);
-    }));
+    let result = client.try_submit_attestations_batch(&items);
 
     assert!(result.is_err(), "cross-business duplicate must reject all");
     assert!(client
@@ -1005,9 +993,7 @@ fn test_atomicity_clean_batch_succeeds_after_failed_batch() {
         1_700_000_001,
         1,
     ));
-    let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.submit_attestations_batch(&bad_items);
-    }));
+    let _ = client.try_submit_attestations_batch(&bad_items);
 
     // Good batch after failure
     let mut good_items = Vec::new(&env);

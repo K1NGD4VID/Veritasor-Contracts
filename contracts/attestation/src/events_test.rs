@@ -888,9 +888,7 @@ fn test_migrate_same_version_panics_no_event() {
 
     let events_before_migration = env.events().all().len();
 
-    let result = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
-        client.migrate_attestation(&admin, &business, &period, &new_root, &1u32);
-    }));
+    let result = client.try_migrate_attestation(&admin, &business, &period, &new_root, &1u32);
 
     assert!(result.is_err(), "expected same-version migration to panic");
     assert_eq!(
