@@ -292,9 +292,8 @@ fn extend_expiry_with_large_timestamp() {
 //  Property-Based Tests for Expiry Extension Monotonicity
 // ════════════════════════════════════════════════════════════════════
 
-use proptest::prelude::*;
 use crate::events::AttestationExpiryExtendedEvent;
-
+use proptest::prelude::*;
 
 proptest! {
     #![proptest_config(ProptestConfig::with_cases(100))]
@@ -316,9 +315,9 @@ proptest! {
         let business = Address::generate(&env);
         let period = String::from_str(&env, "prop-period");
         let merkle_root = BytesN::from_array(&env, &[1u8; 32]);
-        
+
         env.ledger().set_timestamp(0);
-        
+
         // Mock the caller auth
         env.mock_all_auths();
 
@@ -345,7 +344,7 @@ proptest! {
         } else {
             // Valid monotonic cases must succeed
             prop_assert!(result.is_ok(), "Expected success for valid extension: timestamp={}, old_expiry={}, new_expiry={}", timestamp, old_expiry, new_expiry);
-            
+
             // Assert correct storage update
             let (_, _, _, _, _, stored_expiry) = client.get_attestation(&business, &period).unwrap();
             prop_assert_eq!(stored_expiry, Some(new_expiry), "Storage did not reflect new_expiry");
@@ -368,4 +367,3 @@ proptest! {
         }
     }
 }
-
