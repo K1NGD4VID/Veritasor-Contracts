@@ -7,7 +7,7 @@ extern crate std;
 
 use core::cmp::Ordering;
 use soroban_sdk::{
-    contract, contractimpl, contracttype, Address, BytesN, Env, String, Symbol, Vec,
+    contract, contractimpl, contracttype, Address, BytesN, Env, String, Symbol, TryIntoVal, Vec,
 };
 
 use veritasor_common::replay_protection;
@@ -456,7 +456,7 @@ impl AttestationContract {
         }
 
         // 1. Validation Phase
-        let mut seen = Vec::new(env);
+        let mut seen: Vec<(Address, String)> = Vec::new(env);
         for item in items.iter() {
             let business = item.business.clone();
             if require_business_auth {

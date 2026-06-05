@@ -1,7 +1,9 @@
+use std::format;
+
 use crate::{AttestationContract, AttestationContractClient};
 use soroban_sdk::{
-    testutils::{Address as _, Ledger},
-    Address, BytesN, Env, String,
+    testutils::{Address as _, Events, Ledger},
+    Address, BytesN, Env, String, Symbol, TryIntoVal,
 };
 
 fn setup() -> (Env, AttestationContractClient<'static>, Address) {
@@ -354,8 +356,9 @@ proptest! {
             let mut event_found = false;
             for event in events.iter() {
                 let topic0 = event.1.get(0).unwrap();
-                if topic0 == soroban_sdk::IntoVal::into_val(&crate::events::TOPIC_ATTESTATION_EXPIRY_EXTENDED, &env) {
-                    let payload: AttestationExpiryExtendedEvent = event.2.try_into_val(&env).unwrap();
+                let topic_sym: Symbol = topic0.clone().try_into_val(&env).unwrap();
+                if topic_sym == crate::events::TOPIC_ATTESTATION_EXPIRY_EXTENDED {
+                    let payload: AttestationExpiryExtendedEvent = event.2.clone().try_into_val(&env).unwrap();
                     if payload.business == business && payload.period == period {
                         prop_assert_eq!(payload.old_expiry, Some(old_expiry));
                         prop_assert_eq!(payload.new_expiry, new_expiry);

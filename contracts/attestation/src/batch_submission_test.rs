@@ -6,6 +6,8 @@
 
 #![cfg(test)]
 
+use std::format;
+
 use super::*;
 use soroban_sdk::testutils::Address as _;
 use soroban_sdk::token::{Client as TokenClient, StellarAssetClient};
@@ -263,7 +265,7 @@ fn test_batch_submit_when_paused() {
     let admin = client.get_admin();
     let business = Address::generate(&env);
 
-    client.pause(&admin);
+    client.pause(&admin, &0u64);
 
     let mut items = Vec::new(&env);
     items.push_back(create_batch_item(
@@ -1036,7 +1038,6 @@ fn test_batch_at_max_size_accepted() {
 
     let mut items = Vec::new(&env);
     for i in 0..MAX_BATCH_SIZE {
-        let period = String::from_str(&env, &std::format!("2026-{:02}", i + 1));
         let mut root = [0u8; 32];
         root[0] = i as u8;
         items.push_back(create_batch_item(
@@ -1126,7 +1127,7 @@ fn test_batch_stress_max_size_all_items_created() {
     let (env, client) = setup();
 
     let mut items = Vec::new(&env);
-    let businesses: Vec<Address> = (0..5).map(|_| Address::generate(&env)).collect::<Vec<_>>();
+    let businesses: std::vec::Vec<Address> = (0..5).map(|_| Address::generate(&env)).collect();
 
     for b_idx in 0..5 {
         for p_idx in 0..5 {
@@ -1167,7 +1168,7 @@ fn test_batch_stress_one_over_ceiling_panics() {
         let business = Address::generate(&env);
         let period = String::from_str(&env, &std::format!("2026-{:02}", i + 1));
         let mut root = [0u8; 32];
-        root[0] = (i as u8) % 256;
+        root[0] = i as u8;
         items.push_back(BatchAttestationItem {
             business,
             period,
